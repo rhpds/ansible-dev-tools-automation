@@ -1,0 +1,68 @@
+---
+apiVersion: org.eclipse.che/v2
+kind: CheCluster
+metadata:
+  name: {{ .Values.cheCluster.name }}
+  namespace: {{ .Values.cheCluster.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: 2
+spec:
+  components:
+    cheServer:
+      debug: false
+      logLevel: INFO
+    dashboard:
+      logLevel: ERROR
+    devWorkspace: {}
+    devfileRegistry:
+      disableInternalRegistry: true
+    imagePuller:
+      enable: false
+      spec: {}
+    metrics:
+      enable: true
+    pluginRegistry:
+      openVSXURL: "https://open-vsx.org"
+  containerRegistry: {}
+  devEnvironments:
+    startTimeoutSeconds: 1000
+    security: {}
+    secondsOfRunBeforeIdling: -1
+    maxNumberOfWorkspacesPerUser: -1
+    containerBuildConfiguration:
+      openShiftSecurityContextConstraint: {{ .Values.securityContextConstraints.name }}
+    disableContainerBuildCapabilities: false
+    ignoredUnrecoverableEvents:
+    - FailedScheduling
+    defaultEditor: che-incubator/che-code/latest
+    maxNumberOfRunningWorkspacesPerUser: 5
+    defaultComponents:
+    - attributes:
+        container-overrides:
+          securityContext:
+            procMount: Unmasked
+        pod-overrides:
+          metadata:
+            annotations:
+              io.kubernetes.cri-o.Devices: "/dev/fuse,/dev/net/tun"
+          spec:
+            hostUsers: false
+      container:
+        image: "quay.io/cgruver0/che/dev-tools:latest"
+        memoryLimit: 6Gi
+        mountSources: true
+        sourceMapping: /projects
+      name: dev-tools
+    defaultNamespace:
+      autoProvision: true
+      template: <username>-devspaces
+    secondsOfInactivityBeforeIdling: 3600
+    storage:
+      pvcStrategy: per-workspace
+  gitServices: {}
+  networking:
+    auth:
+      gateway:
+        configLabels:
+          app: che
+          component: che-gateway-config

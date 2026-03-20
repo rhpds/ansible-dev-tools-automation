@@ -3,6 +3,8 @@ apiVersion: security.openshift.io/v1
 kind: SecurityContextConstraints
 metadata:
   name: {{ .Values.securityContextConstraints.name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: 1
 priority: null
 allowPrivilegeEscalation: true
 allowedCapabilities:

@@ -8,3 +8,7 @@ deployer:
 
 securityContextConstraints: 
   name: nested-podman-scc
+
+cheCluster:
+  name: devspaces
+  namespace: openshift-devspaces
