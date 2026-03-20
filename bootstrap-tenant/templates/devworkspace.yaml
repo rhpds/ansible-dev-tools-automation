@@ -4,6 +4,8 @@ kind: DevWorkspace
 metadata:
   name: ansible-dev-tools
   namespace: {{ .Values.username }}-devworkspace
+  annotations:
+    argocd.argoproj.io/sync-wave: 2
 spec:
   started: true
   template:
