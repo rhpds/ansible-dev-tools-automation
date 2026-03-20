@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  namespace: {{ .Values.username }}-devworkspace
+  name: {{ .Values.username }}-devworkspace
   labels:
     app.kubernetes.io/part-of: che.eclipse.org
     app.kubernetes.io/component: workspaces-namespace
