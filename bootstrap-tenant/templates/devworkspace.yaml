@@ -1,0 +1,25 @@
+---
+apiVersion: workspace.devfile.io/v1alpha2
+kind: DevWorkspace
+metadata:
+  name: ansible-dev-tools
+  namespace: {{ .Values.username }}-devworkspace
+spec:
+  started: true
+  template:
+    components:
+      - name: dev-tools
+        container:
+          image: quay.io/cgruver0/che/dev-tools:latest
+          memoryLimit: 6Gi
+          mountSources: true
+          sourceMapping: /projects
+    contributions:
+      - name: editor
+        uri: https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/latest/devfile.yaml
+        components:
+          - name: che-code-runtime-description
+            container:
+              env:
+                - name: CODE_HOST
+                  value: 0.0.0.0
