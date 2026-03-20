@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.cheCluster.name }}
   namespace: {{ .Values.cheCluster.namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: 2
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   components:
     cheServer:
