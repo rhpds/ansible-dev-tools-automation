@@ -8,6 +8,15 @@ metadata:
     argocd.argoproj.io/sync-wave: "2"
 spec:
   started: true
+  contributions:
+    - name: editor
+      uri: https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/latest/devfile.yaml
+      components:
+        - name: che-code-runtime-description
+          container:
+            env:
+              - name: CODE_HOST
+                value: 0.0.0.0
   template:
     components:
       - name: dev-tools
@@ -16,12 +25,3 @@ spec:
           memoryLimit: 6Gi
           mountSources: true
           sourceMapping: /projects
-    contributions:
-      - name: editor
-        uri: https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/latest/devfile.yaml
-        components:
-          - name: che-code-runtime-description
-            container:
-              env:
-                - name: CODE_HOST
-                  value: 0.0.0.0
