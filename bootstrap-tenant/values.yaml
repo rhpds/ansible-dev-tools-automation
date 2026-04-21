@@ -13,7 +13,7 @@ devworkspace:
   memoryRequest: 2Gi
   memoryLimit: 4Gi
   cpuRequest: 500m
-  cpuLimit: 2000m
+  cpuLimit: 1000m
   project:
     name: ansible-devspaces-summit
     repo: https://github.com/leogallego/ansible-devspaces-summit.git
