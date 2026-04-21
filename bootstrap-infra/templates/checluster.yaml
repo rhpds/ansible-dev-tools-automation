@@ -48,7 +48,7 @@ spec:
           spec:
             hostUsers: false
       container:
-        image: "ghcr.io/ansible/ansible-devspaces:v26.4.4"
+        image: "{{ .Values.cheCluster.container.image }}"
         memoryLimit: 4Gi
         mountSources: true
         sourceMapping: /projects
