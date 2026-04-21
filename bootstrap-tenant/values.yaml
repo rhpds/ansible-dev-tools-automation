@@ -15,6 +15,6 @@ devworkspace:
   cpuRequest: 500m
   cpuLimit: 2000m
   project:
-    name: ansible-devspaces-summit
-    repo: https://github.com/leogallego/ansible-devspaces-summit.git
+    name: ansible-dev-tools-workspace
+    repo: https://github.com/rhpds/ansible-dev-tools-workspace.git
     revision: main
