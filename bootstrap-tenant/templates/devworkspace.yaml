@@ -7,21 +7,50 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
+  routingClass: che
   started: true
   contributions:
-    - name: editor
-      uri: https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/latest/devfile.yaml
+    - name: ide
+      uri: >-
+        http://devspaces-dashboard.{{ .Values.cheCluster.namespace }}.svc.cluster.local:8080/dashboard/api/editors/devfile?che-editor=che-incubator/che-code/latest
       components:
         - name: che-code-runtime-description
           container:
             env:
               - name: CODE_HOST
-                value: 0.0.0.0
+                value: "0.0.0.0"
   template:
+    projects:
+      - name: "{{ .Values.devworkspace.project.name }}"
+        git:
+          remotes:
+            origin: "{{ .Values.devworkspace.project.repo }}"
+          checkoutFrom:
+            revision: "{{ .Values.devworkspace.project.revision }}"
     components:
-      - name: dev-tools
+      - name: tooling-container
+        attributes:
+          pod-overrides:
+            metadata:
+              annotations:
+                io.kubernetes.cri-o.Devices: "/dev/fuse,/dev/net/tun"
+            spec:
+              hostUsers: false
+          container-overrides:
+            securityContext:
+              procMount: Unmasked
         container:
-          image: quay.io/cgruver0/che/dev-tools:latest
-          memoryLimit: 6Gi
+          image: "{{ .Values.devworkspace.image }}:{{ .Values.devworkspace.tag }}"
+          memoryRequest: "{{ .Values.devworkspace.memoryRequest }}"
+          memoryLimit: "{{ .Values.devworkspace.memoryLimit }}"
+          cpuRequest: "{{ .Values.devworkspace.cpuRequest }}"
+          cpuLimit: "{{ .Values.devworkspace.cpuLimit }}"
           mountSources: true
           sourceMapping: /projects
+          env:
+            - name: ANSIBLE_HOME
+              value: "/projects/{{ .Values.devworkspace.project.name }}/.ansible"
+            - name: HOSTNAME
+              value: ansible-devspaces
+            - name: VSCODE_DEFAULT_WORKSPACE
+              value: "/projects/{{ .Values.devworkspace.project.name }}/devspaces.code-workspace"
