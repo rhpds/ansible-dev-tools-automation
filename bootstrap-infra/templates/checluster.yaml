@@ -48,8 +48,8 @@ spec:
           spec:
             hostUsers: false
       container:
-        image: "quay.io/cgruver0/che/dev-tools:latest"
-        memoryLimit: 6Gi
+        image: "ghcr.io/ansible/ansible-devspaces:v26.4.4"
+        memoryLimit: 4Gi
         mountSources: true
         sourceMapping: /projects
       name: dev-tools
