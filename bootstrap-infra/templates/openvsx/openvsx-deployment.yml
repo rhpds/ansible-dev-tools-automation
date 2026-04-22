@@ -1,0 +1,64 @@
+{{- if .Values.openvsx.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openvsx-server
+  namespace: {{ .Values.openvsx.namespace }}
+  labels:
+    app: openvsx-server
+    app.kubernetes.io/component: openvsx-server
+    app.kubernetes.io/instance: openvsx-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      deployment: openvsx-server
+  template:
+    metadata:
+      labels:
+        deployment: openvsx-server
+    spec:
+      containers:
+        - name: openvsx-server
+          image: {{ .Values.openvsx.image }}
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            httpGet:
+              path: /api/version
+              port: 8080
+            failureThreshold: 30
+            initialDelaySeconds: 140
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/version
+              port: 8080
+            failureThreshold: 30
+            initialDelaySeconds: 160
+            periodSeconds: 20
+            timeoutSeconds: 5
+          terminationMessagePath: /dev/termination-log
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: '1'
+              memory: 4Gi
+          env:
+            - name: OVSX_REGISTRY_URL
+              value: http://openvsx-server:8080
+            - name: OVSX_PAT
+              valueFrom:
+                secretKeyRef:
+                  name: ovsx-pat
+                  key: token
+          volumeMounts:
+            - name: extensions-storage
+              mountPath: /tmp/extensions
+      volumes:
+      - name: extensions-storage
+        persistentVolumeClaim:
+          claimName: extensions-pvc             
+{{- end }}

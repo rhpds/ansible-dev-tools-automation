@@ -1,0 +1,20 @@
+{{- if .Values.openvsx.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ .Values.openvsx.namespace }}
+  labels:
+    app: openvsx-server
+    app.kubernetes.io/component: openvsx-server
+    app.kubernetes.io/instance: openvsx-server
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  name: openvsx-server
+spec:
+  ports:
+    - name: 8080-tcp
+      port: 8080
+      targetPort: 8080
+  selector:
+    deployment: openvsx-server
+{{- end }}

@@ -22,7 +22,7 @@ spec:
     metrics:
       enable: true
     pluginRegistry:
-      openVSXURL: "https://open-vsx.org"
+      openVSXURL: {{ include "bootstrap.openvsx.url" . }}
   containerRegistry: {}
   devEnvironments:
     startTimeoutSeconds: 1000

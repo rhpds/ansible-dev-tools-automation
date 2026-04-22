@@ -1,0 +1,78 @@
+{{- if .Values.openvsx.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: {{ .Values.openvsx.namespace }}
+  labels:
+    app: postgresql
+    app.kubernetes.io/component: postgresql
+    app.kubernetes.io/instance: postgresql
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      deployment: postgresql
+  template:
+    metadata:
+      labels:
+        app: openvsx
+        deployment: postgresql
+        app.kubernetes.io/name: openvsx
+        app.kubernetes.io/instance: openvsx
+        app.kubernetes.io/component: postgresql
+    spec:
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+      containers:
+        - name: postgresql
+          image: {{ .Values.openvsx.postgres.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRESQL_DATABASE
+              value: {{ .Values.openvsx.postgres.database }}
+            - name: POSTGRESQL_USER
+              value: {{ .Values.openvsx.postgres.username }}
+            - name: POSTGRESQL_PASSWORD
+              value: {{ .Values.openvsx.postgres.password }}
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/pgsql/data
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: '1'
+              memory: 2Gi
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.openvsx.postgres.username }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.openvsx.postgres.username }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+{{- end }}

@@ -1,0 +1,15 @@
+{{- if .Values.openvsx.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: extensions-pvc
+  namespace: {{ .Values.openvsx.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.openvsx.extensionsStorageCapacity }}
+{{- end }}
