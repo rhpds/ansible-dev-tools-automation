@@ -18,12 +18,3 @@ devworkspace:
     name: ansible-dev-tools-workspace
     repo: https://github.com/rhpds/ansible-dev-tools-workspace.git
     revision: main
-
-quota:
-  limits:
-    cpu: "6"
-    memory: 8Gi
-  requests:
-    cpu: "3"
-    memory: 8Gi
-    storage: 100Gi
