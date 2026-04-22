@@ -29,27 +29,19 @@ spec:
     security: {}
     secondsOfRunBeforeIdling: -1
     maxNumberOfWorkspacesPerUser: -1
-    containerBuildConfiguration:
-      openShiftSecurityContextConstraint: {{ .Values.securityContextConstraints.name }}
     disableContainerBuildCapabilities: false
+    disableContainerRunCapabilities: false
     ignoredUnrecoverableEvents:
     - FailedScheduling
     defaultEditor: che-incubator/che-code/latest
     maxNumberOfRunningWorkspacesPerUser: 5
     defaultComponents:
-    - attributes:
-        container-overrides:
-          securityContext:
-            procMount: Unmasked
-        pod-overrides:
-          metadata:
-            annotations:
-              io.kubernetes.cri-o.Devices: "/dev/fuse,/dev/net/tun"
-          spec:
-            hostUsers: false
-      container:
+    - container:
         image: "{{ .Values.cheCluster.container.image }}"
-        memoryLimit: 4Gi
+        memoryLimit: 8Gi
+        memoryRequest: 1Gi
+        cpuLimit: "1"
+        cpuRequest: 100m
         mountSources: true
         sourceMapping: /projects
       name: dev-tools
@@ -60,9 +52,4 @@ spec:
     storage:
       pvcStrategy: per-workspace
   gitServices: {}
-  networking:
-    auth:
-      gateway:
-        configLabels:
-          app: che
-          component: che-gateway-config
+  networking: {}
