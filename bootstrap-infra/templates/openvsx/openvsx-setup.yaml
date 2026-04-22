@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.openvsx.setup.name }}
   namespace: {{ .Values.openvsx.namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app: {{ .Values.openvsx.setup.name }}
     app.kubernetes.io/component: {{ .Values.openvsx.setup.name }}
