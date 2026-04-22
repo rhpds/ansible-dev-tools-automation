@@ -38,10 +38,10 @@ spec:
     defaultComponents:
     - container:
         image: "{{ .Values.cheCluster.container.image }}"
-        memoryLimit: 8Gi
-        memoryRequest: 1Gi
-        cpuLimit: "1"
-        cpuRequest: 100m
+        memoryLimit: 4Gi
+        memoryRequest: 2Gi
+        cpuLimit: 1000m
+        cpuRequest: 500m
         mountSources: true
         sourceMapping: /projects
       name: dev-tools

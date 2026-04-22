@@ -6,9 +6,6 @@ deployer:
   domain: apps.cluster-guid.sandbox.opentlc.com
   apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
 
-securityContextConstraints: 
-  name: nested-podman-scc
-
 cheCluster:
   name: devspaces
   namespace: openshift-devspaces
