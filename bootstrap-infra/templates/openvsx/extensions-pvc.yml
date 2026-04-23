@@ -5,7 +5,7 @@ metadata:
   name: extensions-pvc
   namespace: {{ .Values.openvsx.namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   accessModes:
   - ReadWriteOnce
