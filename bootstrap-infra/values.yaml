@@ -10,4 +10,4 @@ cheCluster:
   name: devspaces
   namespace: openshift-devspaces
   container:
-    image: ghcr.io/ansible/ansible-devspaces:v26.4.5
+    image: ghcr.io/ansible/ansible-devspaces:v26.4.4
