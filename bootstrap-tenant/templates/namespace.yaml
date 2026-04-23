@@ -1,3 +1,4 @@
+{{ if .Values.devworkspace -}}
 ---
 apiVersion: v1
 kind: Namespace
@@ -9,3 +10,4 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
     che.eclipse.org/username: {{ .Values.username }}
+{{- end }}

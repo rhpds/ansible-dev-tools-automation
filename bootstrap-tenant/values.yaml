@@ -7,14 +7,15 @@ username: user1
 cheCluster:
   namespace: openshift-devspaces
 
-devworkspace:
-  image: ghcr.io/ansible/ansible-devspaces
-  tag: v26.4.5
-  memoryRequest: 2Gi
-  memoryLimit: 4Gi
-  cpuRequest: 500m
-  cpuLimit: 1000m
-  project:
-    name: ansible-dev-tools-workspace
-    repo: https://github.com/rhpds/ansible-dev-tools-workspace.git
-    revision: main
+devworkspace: ""
+# devworkspace:
+#   image: ghcr.io/ansible/ansible-devspaces
+#   tag: v26.4.5
+#   memoryRequest: 2Gi
+#   memoryLimit: 4Gi
+#   cpuRequest: 500m
+#   cpuLimit: 1000m
+#   project:
+#     name: ansible-dev-tools-workspace
+#     repo: https://github.com/rhpds/ansible-dev-tools-workspace.git
+#     revision: main
