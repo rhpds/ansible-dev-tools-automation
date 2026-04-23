@@ -38,9 +38,13 @@ spec:
           mountSources: true
           sourceMapping: /projects
           env:
+            - name: SHELL
+              value: /bin/bash
             - name: ANSIBLE_HOME
               value: "/projects/{{ .Values.devworkspace.project.name }}/.ansible"
             - name: HOSTNAME
               value: ansible-devspaces
             - name: VSCODE_DEFAULT_WORKSPACE
               value: "/projects/{{ .Values.devworkspace.project.name }}/devspaces.code-workspace"
+            - name: ADT_CONTAINER_ENGINE
+              value: podman
