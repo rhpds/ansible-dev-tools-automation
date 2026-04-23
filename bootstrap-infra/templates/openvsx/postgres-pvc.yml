@@ -4,12 +4,12 @@ kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
   namespace: {{ .Values.openvsx.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.openvsx.postgres.storage }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 {{- end }}
