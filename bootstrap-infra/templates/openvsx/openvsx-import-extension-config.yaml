@@ -1,0 +1,16 @@
+{{- if .Values.openvsx.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openvsx-import-extension-config
+  namespace: {{ .Values.openvsx.namespace }}
+  labels:
+    app: openvsx-import-extensions
+    app.kubernetes.io/component: openvsx-import-extensions
+    app.kubernetes.io/instance: openvsx-import-extensions
+data:
+  extension-list.yaml: |
+{{ .Files.Get "files/extension-list.yaml" | indent 4 }}
+  offline-extensions.sh: |
+{{ .Files.Get "files/offline-extensions.sh" | indent 4 }}
+{{- end }}

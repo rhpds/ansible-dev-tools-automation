@@ -1,0 +1,21 @@
+{{- if .Values.openvsx.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql
+  namespace: {{ .Values.openvsx.namespace }}
+  labels:
+    app: postgresql
+    app.kubernetes.io/component: postgresql
+    app.kubernetes.io/instance: postgresql
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  ports:
+    - name: "5432"
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    deployment: postgresql
+{{- end }}

@@ -1,0 +1,19 @@
+extensions:
+- id: redhat.ansible
+  version: "26.4.4"
+- id: redhat.vscode-yaml
+  version: "1.22.0"
+- id: redhat.vscode-openshift-connector
+  version: "1.21.1"
+- id: redhat.vscode-redhat-account
+  version: "0.2.0"
+- id: ms-python.python
+  version: "2026.4.0"
+- id: ms-python.debugpy
+  version: "2025.18.0"
+- id: ms-python.vscode-python-envs
+  version: "1.10.0"
+- id: ms-python.black-formatter
+  version: "2025.2.0"
+- id: editorconfig.editorconfig
+  version: "0.18.2"

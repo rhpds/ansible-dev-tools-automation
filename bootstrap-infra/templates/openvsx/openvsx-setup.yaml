@@ -1,0 +1,101 @@
+{{- if .Values.openvsx.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.openvsx.setup.name }}
+  namespace: {{ .Values.openvsx.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  labels:
+    app: {{ .Values.openvsx.setup.name }}
+    app.kubernetes.io/component: {{ .Values.openvsx.setup.name }}
+    app.kubernetes.io/instance: {{ .Values.openvsx.setup.name }}
+spec:
+  backoffLimit: 10
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.openvsx.setup.name }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ .Values.openvsx.setup.name }}
+      volumes:
+        - name: config
+          configMap:
+            name: openvsx-import-extension-config
+      initContainers:
+        - name: wait-for-postgres
+          image: {{ .Values.openvsx.ocCliImage }}
+          env:
+            - name: OVSX_PAT
+              valueFrom:
+                secretKeyRef:
+                  name: ovsx-pat
+                  key: token
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              echo "Waiting for PostgreSQL to become ready..."
+              oc wait --for=condition=ready pod -l deployment=postgresql -n {{ .Values.openvsx.namespace }} --timeout=1000s
+
+              echo "Setting up PostgreSQL..."
+              POD=$(oc get pods -n {{ .Values.openvsx.namespace }} -l deployment=postgresql -o jsonpath='{.items[0].metadata.name}')
+
+              oc exec -n {{ .Values.openvsx.namespace }} "$POD" -- psql -d {{ .Values.openvsx.postgres.database }} -c \
+              "INSERT INTO user_data (id, login_name, role) VALUES (1002, 'openvsx-admin', 'admin') \
+              ON CONFLICT DO NOTHING;"
+
+              oc exec -n {{ .Values.openvsx.namespace }} "$POD" -- psql -d {{ .Values.openvsx.postgres.database }} -c \
+              "INSERT INTO personal_access_token (id, user_data, value, active, created_timestamp, accessed_timestamp, description) VALUES (1002, 1002, '$OVSX_PAT', true, current_timestamp, current_timestamp, 'Admin API Token') \
+              ON CONFLICT DO NOTHING;"
+
+      containers:
+        - name: import-extensions
+          image: {{ .Values.openvsx.importExtensionsImage }}
+          env:
+            - name: OVSX_REGISTRY_URL
+              value: "{{ include "bootstrap.openvsx.url" . }}"
+            - name: OVSX_PAT
+              valueFrom:
+                secretKeyRef:
+                  name: ovsx-pat
+                  key: token
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+
+              mkdir -p /opt/app-root/bin/
+              export PATH=$PATH:/opt/app-root/bin
+
+              echo "Downloading yq..."
+              curl -L -s -o /opt/app-root/bin/yq https://github.com/mikefarah/yq/releases/download/v4.53.2/yq_linux_amd64
+              chmod +x /opt/app-root/bin/yq
+
+              echo "Downloading jq..."
+              curl -L -s -o /opt/app-root/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.8.1/jq-linux64
+              chmod +x /opt/app-root/bin/jq
+
+              echo "Installing ovsx..."
+              npm install ovsx
+
+              echo "Waiting for openvsx-server to become ready..."
+              until [ "$(curl -s -o /dev/null -w "%{http_code}" $OVSX_REGISTRY_URL)" = "200" ]; do sleep 1; done;
+
+              echo "Downloading extensions..."
+              cp /openvsx/config/offline-extensions.sh .
+              chmod +x offline-extensions.sh
+              ./offline-extensions.sh -d -f=/openvsx/config/extension-list.yaml
+
+              echo "Uploading extensions"
+              ./offline-extensions.sh -u -b=./openvsx-bundle.tar
+          volumeMounts:
+            - name: config
+              mountPath: /openvsx/config
+{{- end }}

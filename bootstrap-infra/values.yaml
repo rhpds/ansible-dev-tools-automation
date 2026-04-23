@@ -11,3 +11,23 @@ cheCluster:
   namespace: openshift-devspaces
   container:
     image: ghcr.io/ansible/ansible-devspaces:v26.4.5
+
+openvsx:
+  enabled: true
+  namespace: openvsx
+  extensionsStorageCapacity: 2Gi
+  image: registry.redhat.io/devspaces/openvsx-rhel9:3.27
+  importExtensionsImage: registry.access.redhat.com/ubi9/nodejs-22:latest
+  ocCliImage: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+  route:
+    name: openvsx-server
+    host: ""
+  setup:
+    name: openvsx-setup
+  pat: ZWNsaXBzZV9jaGVfdG9rZW4=
+  postgres:
+    storage: 10Gi
+    database: openvsx
+    username: openvsx
+    password: openvsx
+    image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:15-el8

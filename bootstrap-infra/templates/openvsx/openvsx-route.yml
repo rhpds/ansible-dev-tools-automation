@@ -1,0 +1,26 @@
+{{- if .Values.openvsx.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  namespace: {{ .Values.openvsx.namespace }}
+  name: {{ .Values.openvsx.route.name }}
+  labels:
+    app.kubernetes.io/instance: openvsx-server
+    app.kubernetes.io/component: openvsx-server
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+
+    app.kubernetes.io/instance: openvsx-server
+    app.kubernetes.io/component: openvsx-server
+spec:
+  host: {{ template "bootstrap.openvsx.host" . }}
+  to:
+    kind: Service
+    name: openvsx-server
+    weight: 100
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
