@@ -9,7 +9,7 @@ cheCluster:
 
 devworkspace:
   image: ghcr.io/ansible/ansible-devspaces
-  tag: v26.4.4
+  tag: v26.4.5
   memoryRequest: 2Gi
   memoryLimit: 4Gi
   cpuRequest: 500m
