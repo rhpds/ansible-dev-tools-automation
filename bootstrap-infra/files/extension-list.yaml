@@ -1,6 +1,6 @@
 extensions:
 - id: redhat.ansible
-  version: "26.4.4"
+  version: "26.4.5"
 - id: redhat.vscode-yaml
   version: "1.22.0"
 - id: redhat.vscode-openshift-connector
