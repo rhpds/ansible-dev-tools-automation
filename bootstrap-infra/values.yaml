@@ -38,3 +38,4 @@ imageSync:
   enabled: true
   name: image-sync
   image: registry.redhat.io/rhel10/skopeo:latest
+  ocCliImage: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
