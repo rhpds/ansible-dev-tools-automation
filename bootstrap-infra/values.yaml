@@ -10,7 +10,7 @@ cheCluster:
   name: devspaces
   namespace: openshift-devspaces
   container:
-    image: ghcr.io/ansible/ansible-devspaces:v26.4.5
+    source: ghcr.io/ansible/ansible-devspaces:v26.4.5
 
 openvsx:
   enabled: true
@@ -31,3 +31,12 @@ openvsx:
     username: openvsx
     password: openvsx
     image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:15-el8
+
+imageSync:
+  enabled: true
+  name: image-sync
+  image: registry.redhat.io/rhel10/skopeo:latest
+  destination:
+    registry: image-registry.openshift-image-registry.svc:5000
+    namespace: openshift
+    image: ansible-devspaces:v26.4.5

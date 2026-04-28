@@ -1,0 +1,48 @@
+{{- if .Values.imageSync.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.imageSync.name }}
+  namespace: {{ .Values.cheCluster.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  labels:
+    app: {{ .Values.imageSync.name }}
+    app.kubernetes.io/component: {{ .Values.imageSync.name }}
+    app.kubernetes.io/instance: {{ .Values.imageSync.name }}
+spec:
+  backoffLimit: 10
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.imageSync.name }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ .Values.imageSync.name }}
+      volumes:
+        - name: token
+          projected:
+            sources:
+            - serviceAccountToken:
+                path: token
+                expirationSeconds: 7200
+      containers:
+        - name: sync-image
+          image: {{ .Values.imageSync.image }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+
+              echo "Synchronizing image {{ tpl .Values.cheCluster.container.source . }} -> {{ include "bootstrap.devspaces.image" . }}"
+              skopeo copy --retry-times 3 --retry-delay 5s \
+                docker://{{ tpl .Values.cheCluster.container.source . }} \
+                docker://{{ include "bootstrap.devspaces.image" . }} \
+                --dest-registry-token $(cat /var/run/secrets/tokens/token) \
+                --dest-cert-dir /var/run/secrets/kubernetes.io/serviceaccount/
+
+          volumeMounts:
+            - name: token
+              mountPath: /var/run/secrets/tokens
+{{- end }}

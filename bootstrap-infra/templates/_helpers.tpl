@@ -11,3 +11,10 @@ Return the URL for the OpenVSX server
 {{- define "bootstrap.openvsx.url" -}}
 {{- printf "https://%s" (include "bootstrap.openvsx.host" .) }}
 {{- end -}}
+
+{{/*
+Dev Spaces Image
+*/}}
+{{- define "bootstrap.devspaces.image" -}}
+{{- printf "%s/%s/%s" .Values.imageSync.destination.registry .Values.imageSync.destination.namespace .Values.imageSync.destination.image }}
+{{- end -}}
