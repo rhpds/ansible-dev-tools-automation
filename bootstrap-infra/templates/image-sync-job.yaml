@@ -26,6 +26,23 @@ spec:
             - serviceAccountToken:
                 path: token
                 expirationSeconds: 7200
+        - name: pull-secret
+          emptyDir: {}
+      initContainers:
+        - name: fetch-pull-secret
+          image: {{ .Values.imageSync.ocCliImage }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "Fetching global pull secret from openshift-config..."
+              oc get secret/pull-secret -n openshift-config \
+                -o jsonpath='{.data.\.dockerconfigjson}' | base64 -d > /pull-secret/auth.json
+              echo "Pull secret saved."
+          volumeMounts:
+            - name: pull-secret
+              mountPath: /pull-secret
       containers:
         - name: sync-image
           image: {{ .Values.imageSync.image }}
@@ -34,15 +51,24 @@ spec:
             - -c
             - |
               set -e
+              DEST_REGISTRY="{{ .Values.imageSync.destination.registry }}"
+              DEST_NAMESPACE="{{ .Values.imageSync.destination.namespace }}"
+              TOKEN=$(cat /var/run/secrets/tokens/token)
+              CERT_DIR="/var/run/secrets/kubernetes.io/serviceaccount/"
 
-              echo "Synchronizing image {{ tpl .Values.cheCluster.container.source . }} -> {{ include "bootstrap.devspaces.image" . }}"
+              {{- range .Values.imageSync.images }}
+              echo "Synchronizing image {{ tpl .source $ }} -> ${DEST_REGISTRY}/${DEST_NAMESPACE}/{{ .destination }}"
               skopeo copy --retry-times 3 --retry-delay 5s \
-                docker://{{ tpl .Values.cheCluster.container.source . }} \
-                docker://{{ include "bootstrap.devspaces.image" . }} \
-                --dest-registry-token $(cat /var/run/secrets/tokens/token) \
-                --dest-cert-dir /var/run/secrets/kubernetes.io/serviceaccount/
-
+                docker://{{ tpl .source $ }} \
+                docker://${DEST_REGISTRY}/${DEST_NAMESPACE}/{{ .destination }} \
+                --src-authfile /pull-secret/auth.json \
+                --dest-registry-token ${TOKEN} \
+                --dest-cert-dir ${CERT_DIR}
+              {{ end }}
           volumeMounts:
             - name: token
               mountPath: /var/run/secrets/tokens
+            - name: pull-secret
+              mountPath: /pull-secret
+              readOnly: true
 {{- end }}

@@ -13,8 +13,9 @@ Return the URL for the OpenVSX server
 {{- end -}}
 
 {{/*
-Dev Spaces Image
+Dev Spaces Image — resolves to the internal registry path for the first synced image
 */}}
 {{- define "bootstrap.devspaces.image" -}}
-{{- printf "%s/%s/%s" .Values.imageSync.destination.registry .Values.imageSync.destination.namespace .Values.imageSync.destination.image }}
+{{- $first := index .Values.imageSync.images 0 -}}
+{{- printf "%s/%s/%s" .Values.imageSync.destination.registry .Values.imageSync.destination.namespace $first.destination }}
 {{- end -}}
