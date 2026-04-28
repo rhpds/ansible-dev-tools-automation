@@ -12,6 +12,8 @@ cheCluster:
   container:
     source: ghcr.io/ansible/ansible-devspaces:v26.4.5
 
+eeImage: registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9:latest
+
 openvsx:
   enabled: true
   namespace: openvsx
@@ -36,7 +38,3 @@ imageSync:
   enabled: true
   name: image-sync
   image: registry.redhat.io/rhel10/skopeo:latest
-  destination:
-    registry: image-registry.openshift-image-registry.svc:5000
-    namespace: openshift
-    image: ansible-devspaces:v26.4.5

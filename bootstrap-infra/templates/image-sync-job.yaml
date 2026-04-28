@@ -42,6 +42,13 @@ spec:
                 --dest-registry-token $(cat /var/run/secrets/tokens/token) \
                 --dest-cert-dir /var/run/secrets/kubernetes.io/serviceaccount/
 
+              echo "Synchronizing image {{ .Values.eeImage }} -> {{ include "bootstrap.ee-minimal.image" . }}"
+              skopeo copy --retry-times 3 --retry-delay 5s \
+                docker://{{ .Values.eeImage }} \
+                docker://{{ include "bootstrap.ee-minimal.image" . }} \
+                --dest-registry-token $(cat /var/run/secrets/tokens/token) \
+                --dest-cert-dir /var/run/secrets/kubernetes.io/serviceaccount/
+
           volumeMounts:
             - name: token
               mountPath: /var/run/secrets/tokens

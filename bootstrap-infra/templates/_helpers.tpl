@@ -16,5 +16,12 @@ Return the URL for the OpenVSX server
 Dev Spaces Image
 */}}
 {{- define "bootstrap.devspaces.image" -}}
-{{- printf "%s/%s/%s" .Values.imageSync.destination.registry .Values.imageSync.destination.namespace .Values.imageSync.destination.image }}
+{{- printf "image-registry.openshift-image-registry.svc:5000/openshift/%s" (.Values.cheCluster.container.source | splitList "/" | last) }}
+{{- end -}}
+
+{{/*
+EE Minimal Image
+*/}}
+{{- define "bootstrap.ee-minimal.image" -}}
+{{- printf "image-registry.openshift-image-registry.svc:5000/openshift/%s" (.Values.eeImage | splitList "/" | last) }}
 {{- end -}}
