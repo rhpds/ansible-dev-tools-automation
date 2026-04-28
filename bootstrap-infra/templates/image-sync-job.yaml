@@ -53,7 +53,7 @@ spec:
               set -e
 
               echo "Synchronizing image {{ tpl .Values.cheCluster.container.source . }} -> {{ include "bootstrap.devspaces.image" . }}"
-              skopeo copy --retry-times 3 --retry-delay 5s \
+              skopeo copy --retry-times 3 --retry-delay 5s --remove-signatures \
                 docker://{{ tpl .Values.cheCluster.container.source . }} \
                 docker://{{ include "bootstrap.devspaces.image" . }} \
                 --src-authfile /pull-secret/auth.json \
@@ -61,7 +61,7 @@ spec:
                 --dest-cert-dir /var/run/secrets/kubernetes.io/serviceaccount/
 
               echo "Synchronizing image {{ .Values.eeImage }} -> {{ include "bootstrap.ee-minimal.image" . }}"
-              skopeo copy --retry-times 3 --retry-delay 5s \
+              skopeo copy --retry-times 3 --retry-delay 5s --remove-signatures \
                 docker://{{ .Values.eeImage }} \
                 docker://{{ include "bootstrap.ee-minimal.image" . }} \
                 --src-authfile /pull-secret/auth.json \
