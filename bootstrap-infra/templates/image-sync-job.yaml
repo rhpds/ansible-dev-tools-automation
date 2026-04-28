@@ -58,7 +58,7 @@ spec:
 
               {{- range .Values.imageSync.images }}
               echo "Synchronizing image {{ tpl .source $ }} -> ${DEST_REGISTRY}/${DEST_NAMESPACE}/{{ .destination }}"
-              skopeo copy --retry-times 3 --retry-delay 5s \
+              skopeo copy --retry-times 3 --retry-delay 5s --remove-signatures \
                 docker://{{ tpl .source $ }} \
                 docker://${DEST_REGISTRY}/${DEST_NAMESPACE}/{{ .destination }} \
                 --src-authfile /pull-secret/auth.json \
